@@ -17,6 +17,7 @@ namespace Company.Function
         public void Run([IoTHubTrigger("messages/events", Connection = "IoTHub")]EventData message, ILogger log)
         {
             log.LogInformation($"C# IoT Hub trigger function processed a message: {Encoding.UTF8.GetString(message.Body.Array)}");
+            var json = Encoding.UTF8.GetString(message.Body.Array);
         }
     }
 }

@@ -48,6 +48,10 @@
             "Microsoft.Azure.Devices.Client": {
               "target": "Package",
               "version": "[1.41.3, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.2, )"
             }
           },
           "imports": [

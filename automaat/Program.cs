@@ -7,18 +7,39 @@ using System.Threading.Tasks;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Linq;
 using automaat.Models;
 
-
-
-
-
+AutomaatConfig config = new AutomaatConfig();
 string connectionString = "HostName=TiboIot.azure-devices.net;DeviceId=naam;SharedAccessKey=ks7MGNBuIKPmNh8V8awbqOfX3x2eEa90bD7uMw4fWSA=";
+
 var deviceClient = DeviceClient.CreateFromConnectionString(connectionString);
+//await deviceClient.SetMethodHandlerAsync(OnDesiredPropertiesChanged(), null);
+
+
+
+#region "Boot"
+async Task OnDesiredPropertiesChanged(TwinCollection dp, object userContext)
+{
+    Console.WriteLine("Desired properties changed");
+    Console.WriteLine(JsonConvert.SerializeObject(dp));
+    config = JsonConvert.DeserializeObject<AutomaatConfig>(dp.ToJson());
+}
+
+async Task GetDesiredProperties(){
+    var twin = await deviceClient.GetTwinAsync();
+    var desiredProperties = twin.Properties.Desired;
+    var desiredPropertiesJson = desiredProperties.ToJson();
+    config = JsonConvert.DeserializeObject<AutomaatConfig>(desiredPropertiesJson);
+    Console.WriteLine(desiredPropertiesJson);
+}
+
+#endregion
 
 
 #region Menu
 
+await GetDesiredProperties();
 await Loop();
 async Task Loop()
 {
@@ -65,7 +86,7 @@ async Task SendWater()
     {
         Product = "Water",
         Amount = 1,
-        UnitPrice = 1.5M,
+        UnitPrice = config.PriceWater,
         TotalPrice = 1.5M,
         Location = "A1"
     };
@@ -81,7 +102,7 @@ async Task SendCola()
     {
         Product = "Cola",
         Amount = 1,
-        UnitPrice = 2.5M,
+        UnitPrice = config.PriceCola,
         TotalPrice = 2.5M,
         Location = "A1"
     };
@@ -98,7 +119,7 @@ async Task SendFruitsap()
     {
         Product = "Fruitsap",
         Amount = 1,
-        UnitPrice = 2.5M,
+        UnitPrice = config.PriceFruitsap,
         TotalPrice = 2.5M,
         Location = "A1"
     };
